@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Welcome ItZ Fizz – Scroll Hero</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root { --bg:#0a0a0f; --fg:#f4f4f5; --muted:#8b8b99; --accent:#a3e635; box-sizing:border-box;
+          padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+  html { background:var(--bg); }
+  body { background:var(--bg); color:var(--fg); font-family:'Inter',system-ui,sans-serif; margin:0; overflow-x:hidden; }
+  .will { will-change:transform; }
+  .road-dash { background:repeating-linear-gradient(90deg,#3f3f46 0 60px,transparent 60px 120px); height:4px; width:100%; }
+</style>
+</head>
+<body>
+<!-- Scroll track: tall section; hero is pinned inside it -->
+<section id="track" class="relative">
+  <div id="hero" class="relative h-screen w-full overflow-hidden flex flex-col items-center">
+
+    <!-- Headline -->
+    <div id="headWrap" class="will mt-[12vh] px-4 text-center">
+      <h1 id="headline" class="font-light text-[clamp(1.4rem,5.5vw,4.5rem)] flex flex-wrap justify-center gap-x-[0.9em]" aria-label="Welcome Itz Fizz"></h1>
+      <p class="mt-4 text-sm tracking-[0.4em] uppercase text-[color:var(--muted)] opacity-0" id="sub">Scroll to drive</p>
+    </div>
+
+    <!-- Stats -->
+    <div id="stats" class="mt-[8vh] grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 px-6 max-w-5xl w-full text-center">
+      <div class="stat will"><div class="text-4xl md:text-6xl font-semibold text-[color:var(--accent)]"><span class="num" data-to="58">0</span>%</div><p class="mt-2 text-xs md:text-sm text-[color:var(--muted)]">Increase in pick up point use</p></div>
+      <div class="stat will"><div class="text-4xl md:text-6xl font-semibold text-[color:var(--accent)]"><span class="num" data-to="23">0</span>%</div><p class="mt-2 text-xs md:text-sm text-[color:var(--muted)]">Decrease in customer phone calls</p></div>
+      <div class="stat will"><div class="text-4xl md:text-6xl font-semibold text-[color:var(--accent)]"><span class="num" data-to="27">0</span>%</div><p class="mt-2 text-xs md:text-sm text-[color:var(--muted)]">Increase in pick up point use</p></div>
+      <div class="stat will"><div class="text-4xl md:text-6xl font-semibold text-[color:var(--accent)]"><span class="num" data-to="40">0</span>%</div><p class="mt-2 text-xs md:text-sm text-[color:var(--muted)]">Decrease in customer phone calls</p></div>
+    </div>
+
+    <!-- Road + car -->
+    <div class="absolute left-0 right-0 bottom-[10vh]">
+      <div id="road" class="road-dash absolute left-0 bottom-0"></div>
+      <svg id="car" class="will relative w-[min(70vw,420px)] mb-1" viewBox="0 0 400 130" fill="none" aria-hidden="true">
+        <path d="M20 90 L30 62 Q40 50 70 46 L130 40 Q160 12 210 12 L270 14 Q310 20 330 46 L372 56 Q388 62 388 82 L388 92 Z" fill="#a3e635"/>
+        <path d="M145 40 Q168 24 205 24 L262 26 Q290 30 305 46 Z" fill="#0a0a0f" opacity=".85"/>
+        <rect x="372" y="66" width="16" height="10" rx="3" fill="#fef9c3"/><rect x="20" y="66" width="8" height="10" rx="3" fill="#dc2626"/>
+        <rect x="20" y="88" width="368" height="10" rx="4" fill="#4d7c0f"/>
+        <g transform="translate(100 98)"><g class="wheel"><circle r="26" fill="#18181b" stroke="#52525b" stroke-width="4"/><path d="M0 -20V20M-20 0H20M-14 -14L14 14M14 -14L-14 14" stroke="#a1a1aa" stroke-width="3"/></g></g>
+        <g transform="translate(304 98)"><g class="wheel"><circle r="26" fill="#18181b" stroke="#52525b" stroke-width="4"/><path d="M0 -20V20M-20 0H20M-14 -14L14 14M14 -14L-14 14" stroke="#a1a1aa" stroke-width="3"/></g></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// Build letter-spaced headline: each word -> letters
+const head = document.getElementById('headline');
+"WELCOME ITZ FIZZ".split(' ').forEach(word => {
+  const w = document.createElement('span');
+  w.className = 'inline-flex';
+  [...word].forEach(ch => {
+    const l = document.createElement('span');
+    l.className = 'letter inline-block opacity-0 tracking-[0.35em] will';
+    l.textContent = ch;
+    w.appendChild(l);
+  });
+  head.appendChild(w);
+});
+
+const wheels = document.querySelectorAll('.wheel');
+
+// ---------- 1. Intro (time-based, runs once) ----------
+const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
+intro
+  .fromTo('.letter', { y: 40, opacity: 0, filter: 'blur(8px)' },
+          { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1, stagger: 0.06 })
+  .to('#sub', { opacity: 1, duration: 0.8 }, '-=0.5')
+  .fromTo('.stat', { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.9, stagger: 0.18 }, '-=0.4')
+  .fromTo('#car', { opacity: 0 }, { opacity: 1, duration: 0.8 }, '-=0.6');
+
+// ---------- 2. Scroll-driven (scrubbed, eased with scrub:1) ----------
+const mm = gsap.matchMedia();
+mm.add('(prefers-reduced-motion: no-preference)', () => {
+  const counters = [...document.querySelectorAll('.num')].map(el => ({ el, to: +el.dataset.to, v: 0 }));
+
+  const tl = gsap.timeline({
+    defaults: { ease: 'none' },
+    scrollTrigger: {
+      trigger: '#track',
+      start: 'top top',
+      end: '+=250%',
+      pin: '#hero',
+      scrub: 1,            // 1s smoothing = interpolated, fluid motion
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+    }
+  });
+
+  const car = document.getElementById('car');
+  const spin = { a: 0 };
+  tl.fromTo(car, { x: 0 }, { x: () => innerWidth - car.getBoundingClientRect().width, ease: 'power1.inOut' }, 0)
+    .to(spin, { a: 1080, onUpdate() {                        // wheels: plain SVG rotate(), no GSAP transform math
+        wheels.forEach(w => w.setAttribute('transform', 'rotate(' + spin.a + ')'));
+      } }, 0)
+    .to('#headWrap', { y: -60, scale: 0.9, opacity: 0.35 }, 0)
+    .to('.stat', { y: -20, stagger: 0.05 }, 0)
+    .to(counters, {                                           // numbers count up with scroll
+      v: (i, t) => t.to,
+      stagger: 0.05,
+      onUpdate() { counters.forEach(c => c.el.textContent = Math.round(c.v)); }
+    }, 0);
+});
+
+// Reduced motion: show final values statically
+mm.add('(prefers-reduced-motion: reduce)', () => {
+  document.querySelectorAll('.num').forEach(el => el.textContent = el.dataset.to);
+});
+</script>
+</body>
+</html>
